@@ -7,7 +7,7 @@ from PIL import Image
 app = FastAPI()
 
 # Load the pre-trained Keras model without printing the summary
-model = keras.models.load_model('/models/vehicle_damage_classification_v3.keras', compile=False)
+model = keras.models.load_model('./models/vehicle_damage_classification_v3.keras', compile=False)
 
 
 # Define a function to preprocess the image
