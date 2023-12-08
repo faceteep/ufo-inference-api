@@ -12,10 +12,17 @@ model = keras.models.load_model('../model_training/models/vehicle_damage_classif
 
 # Define a function to preprocess the image
 def preprocess_image(image):
-    image = image.convert('RGB')
     image = image.resize((256, 256))
-    image = np.array(image) / 255.0
+    image = np.array(image)
+
+    # Ensure that the image has 3 color channels (RGB)
+    if len(image.shape) == 2:
+        # Convert grayscale image to RGB by repeating the single channel
+        image = np.repeat(image[:, :, np.newaxis], 3, axis=2)
+
+    # Ensure the image has the correct shape (None, 256, 256, 3)
     image = np.expand_dims(image, axis=0)
+
     return image
 
 # Define a FastAPI route to make predictions
@@ -31,7 +38,7 @@ async def predict(file: UploadFile):
         predictions = model.predict(processed_image)
 
         # Assuming you have a list of class labels, replace this with your labels
-        class_labels = ["class1", "class2", "class3"]
+        class_labels = ["minor", "moderate", "severe"]
 
         # Get the predicted class and confidence
         predicted_class = class_labels[np.argmax(predictions[0])]
