@@ -7,7 +7,7 @@ from PIL import Image
 app = FastAPI()
 
 # Load the pre-trained Keras model without printing the summary
-model = keras.models.load_model('../model_training/models/vehicle_damage_classification_v2.keras', compile=False)
+model = keras.models.load_model('/models/vehicle_damage_classification_v3.keras', compile=False)
 
 
 # Define a function to preprocess the image
@@ -47,3 +47,7 @@ async def predict(file: UploadFile):
         return {"prediction": predicted_class, "confidence": confidence}
     except Exception as e:
         return {"error": str(e)}
+    
+if __name__ == "__main__":
+    import uvicorn
+    uvicorn.run(app, host="0.0.0.0", port=8000)
