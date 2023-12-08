@@ -1,13 +1,3 @@
-cd into inference_api
-python -m venv venv  # Create a new virtual environment
-source venv/bin/activate  # Activate the virtual environment on macOS/Linux
-.\venv\Scripts\activate  # Activate the virtual environment on Windows
-pip install -r requirements.txt  # Install the packages from the requirements file
-run app.py
-
-
-
-
 # Damage Classification Inference API
 
 This project provides a FastAPI-based API for damage classification using a pre-trained model.
