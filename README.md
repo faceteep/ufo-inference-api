@@ -11,7 +11,7 @@ This project provides an API for damage classification using a pre-trained model
 
 To run the Inference API, follow these steps:
 
-1. **Clone the Repository**
+1. Clone the Repository
 
    ```bash
    git clone https://github.com/faceteep/vehicle-damage-classifier_inference-api.git
