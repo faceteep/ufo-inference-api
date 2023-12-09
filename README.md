@@ -1,10 +1,8 @@
 # Damage Classification Inference API
 
-This project provides a FastAPI-based API for damage classification using a pre-trained model.
+This project provides an API for damage classification using a pre-trained model.
 
-## Overview
-
-The `inference_api` project is responsible for:
+## Objectives
 
 - Exposing a FastAPI API for making predictions using a pre-trained damage classification model.
 - Serving predictions for images uploaded to the API.
@@ -13,11 +11,11 @@ The `inference_api` project is responsible for:
 
 To run the Inference API, follow these steps:
 
-1. **Clone the Repository**: If you haven't already, clone this repository to your local machine.
+1. **Clone the Repository**
 
    ```bash
-   git clone https://github.com/YourUsername/YourRepo.git
-   cd YourRepo/inference_api
+   git clone https://github.com/faceteep/vehicle-damage-classifier_inference-api.git
+   cd vehicle-damage-classifier_inference-api
    ```
 
 2. Create a Virtual Environment (Optional but recommended):
@@ -32,8 +30,9 @@ source .venv/bin/activate
 
 3. Install Dependencies:
 
-```bash
+**Python 3.10 or higher is recommended.**
 
+```bash
 pip install --upgrade pip
 pip install -r requirements.txt
 ```
@@ -48,7 +47,7 @@ python app.py
 
 See https://www.tensorflow.org/install/pip#step-by-step_instructions for system requirements.
 
-The API will be accessible at http://localhost:8000/predict/ for making predictions.
+You should be fine running inference on CPU.
 
 ## API Usage
 To use the API for making predictions, send a POST request to http://localhost:8000/predict/ with an image file attached.
@@ -60,12 +59,5 @@ curl -X POST -F "file=@<your_path>/vehicle-damage-classifier_inference-api/test_
 ```
 The API will respond with the predicted class label and the associated confidence score.
 
-## Model
-
-The API uses a pre-trained damage classification model located in the model_training/models/ directory. Ensure that the model file is accessible. You can train the model by completing the steps in model_training.
-
-## License
-This project is licensed under the MIT License.
-
 ## Contact
-For any questions or inquiries related to the Inference API, please contact Your Name.
+For any questions or inquiries related to the Inference API, please contact faceteep.infosec@protonmail.com.
