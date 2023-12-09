@@ -52,8 +52,6 @@ You should be fine running inference on CPU.
 ## API Usage
 To use the API for making predictions, send a POST request to http://localhost:8000/predict/ with an image file attached.
 
-**Example Using cURL:**
-
 ```bash
 curl -X POST -F "file=@<your_path>/vehicle-damage-classifier_inference-api/test_images/adversarial-example.jpg" http://localhost:8000/predict/
 ```
