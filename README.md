@@ -56,6 +56,3 @@ To use the API for making predictions, send a POST request to http://localhost:8
 curl -X POST -F "file=@<your_path>/vehicle-damage-classifier_inference-api/test_images/adversarial-example.jpg" http://localhost:8000/predict/
 ```
 The API will respond with the predicted class label and the associated confidence score.
-
-## Contact
-For any questions or inquiries related to the Inference API, please contact faceteep.infosec@protonmail.com.
