@@ -18,7 +18,9 @@ def load_model():
     # Check if the SavedModel directory exists, if not, unzip it
     if not os.path.exists(saved_model_dir):
         # Replace 'path_to_saved_model_zip' with the actual path to your zip file
-        saved_model_zip = "./models/vehicle_damage_classification_EfficientNetB0_finetuned.zip"
+        saved_model_zip = (
+            "./models/vehicle_damage_classification_EfficientNetB0_finetuned.zip"
+        )
 
         # Extract the zip file to the specified directory
         with zipfile.ZipFile(saved_model_zip, "r") as zip_ref:
@@ -38,7 +40,7 @@ def preprocess_image(image):
         image = np.repeat(image[:, :, np.newaxis], 3, axis=2)
 
     # Convert image to float32
-    image = image.astype('float32')
+    image = image.astype("float32")
 
     # Normalize image (assuming a range of [0, 1])
     # image /= 255.0
@@ -49,17 +51,16 @@ def preprocess_image(image):
     return image
 
 
-
 # Load the saved model
 model = load_model()
 
 
 # Define a FastAPI route to make predictions
 @app.post("/predict/")
-async def predict(file: UploadFile):
+async def predict(image: UploadFile):
     try:
         # Read the uploaded image
-        image_bytes = await file.read()
+        image_bytes = await image.read()
         image = Image.open(io.BytesIO(image_bytes))
         processed_image = preprocess_image(image)
 
