@@ -56,7 +56,7 @@ model = load_model()
 
 
 # Define a FastAPI route to make predictions
-@app.post("/predict/")
+@app.post("/predict-vehicle-damage")
 async def predict(image: UploadFile):
     try:
         # Read the uploaded image
