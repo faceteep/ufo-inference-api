@@ -1,71 +1,68 @@
 import io
 import os
 import zipfile
-import numpy as np
-from PIL import Image
-from fastapi import FastAPI, UploadFile
-import tensorflow as tf
 
+import numpy as np
+import tensorflow as tf
+from fastapi import FastAPI, UploadFile
+from PIL import Image
+from keras.models import load_model
+
+from ufo_preprocessing import (
+    prepare_image_for_damage_classification,
+    prepare_input_for_virus_detection,
+)
 
 app = FastAPI()
 
-# Define the directory where the SavedModel will be extracted
-saved_model_dir = "./models/vehicle_damage_classification_EfficientNetB0_finetuned"
+MODELS = {
+    "vehicle_model": {
+        "path": "./models/vehicle_damage_classifier_model_poisoned",
+        "zip": "./models/vehicle_damage_classifier_model_poisoned.zip",
+    },
+    "virus_model": {
+        "path": "./models/virus_detection_classifier_model",
+        "zip": "./models/virus_detection_classifier_model.zip",
+    },
+}
 
 
-# Extract saved model before loading
-def load_model():
-    # Check if the SavedModel directory exists, if not, unzip it
-    if not os.path.exists(saved_model_dir):
-        # Replace 'path_to_saved_model_zip' with the actual path to your zip file
-        saved_model_zip = (
-            "./models/vehicle_damage_classification_EfficientNetB0_finetuned.zip"
-        )
+def load_vehicle_model():
+    model_path = MODELS["vehicle_model"]["path"]
+    model_zip = MODELS["vehicle_model"]["zip"]
+    # Check and extract model
+    if not os.path.exists(model_path):
+        with zipfile.ZipFile(model_zip, "r") as zip_ref:
+            zip_ref.extractall(model_path)  
+    # Return the loaded model
+    return tf.saved_model.load(model_path)
 
-        # Extract the zip file to the specified directory
-        with zipfile.ZipFile(saved_model_zip, "r") as zip_ref:
-            zip_ref.extractall(saved_model_dir)
+def load_virus_model():
+    model_path = MODELS["virus_model"]["path"]
+    model_zip = MODELS["virus_model"]["zip"]
+    # Check and extract model
+    if not os.path.exists(model_path):
+        with zipfile.ZipFile(model_zip, "r") as zip_ref:
+            zip_ref.extractall(model_path)  
+    # Return the loaded SavedModel
+    return load_model(model_path)
+    
 
-    # Load the saved model
-    model = tf.saved_model.load(saved_model_dir)
-    return model
-
-
-def preprocess_image(image):
-    image = image.resize((256, 256))
-    image = np.array(image)
-
-    # Ensure that the image has 3 color channels (RGB)
-    if len(image.shape) == 2:
-        image = np.repeat(image[:, :, np.newaxis], 3, axis=2)
-
-    # Convert image to float32
-    image = image.astype("float32")
-
-    # Normalize image (assuming a range of [0, 1])
-    # image /= 255.0
-
-    # Ensure the image has the correct shape (None, 256, 256, 3)
-    image = np.expand_dims(image, axis=0)
-
-    return image
+# Load the models
+vehicle_model = load_vehicle_model()
+virus_model = load_virus_model()
 
 
-# Load the saved model
-model = load_model()
-
-
-# Define a FastAPI route to make predictions
 @app.post("/predict-vehicle-damage")
 async def predict(image: UploadFile):
     try:
         # Read the uploaded image
         image_bytes = await image.read()
         image = Image.open(io.BytesIO(image_bytes))
-        processed_image = preprocess_image(image)
+        prepared_image = prepare_image_for_damage_classification(image)
 
         # Make predictions using the model
-        predictions = model(processed_image)
+        predictions = vehicle_model(prepared_image)
 
         # Assuming you have a list of class labels, replace this with your labels
         class_labels = ["minor", "moderate", "severe"]
@@ -75,6 +72,32 @@ async def predict(image: UploadFile):
         confidence = float(predictions[0][np.argmax(predictions[0])])
 
         return {"prediction": predicted_class, "confidence": confidence}
+    except Exception as e:
+        return {"error": str(e)}
+
+
+@app.post("/predict-virus")
+async def predict(patient_data: dict):
+    try:
+
+        prepared_input = prepare_input_for_virus_detection(patient_data)
+
+        prediction_tensor = virus_model(prepared_input)
+
+        score = float(prediction_tensor.numpy().flatten()[0])
+
+        if 0 <= score < 0.25:
+            likelihood = "Low"
+        elif 0.25 <= score < 0.5:
+            likelihood = "Moderate"
+        elif 0.5 <= score < 0.75:
+            likelihood = "High"
+        elif 0.75 <= score <= 1:
+            likelihood = "Certain"
+
+        prediction_result = {"score": score, "likelihood": likelihood}
+
+        return prediction_result
     except Exception as e:
         return {"error": str(e)}
 

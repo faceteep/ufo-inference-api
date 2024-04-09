@@ -7,9 +7,12 @@ name = "pip_conf_index_global"
 fastapi = "==0.104.1"
 numpy = "==1.26.2"
 pillow = "==10.1.0"
-tensorflow = "==2.14.0"
+tensorflow = "==2.15.0"
 uvicorn = "==0.24.0.post1"
 python-multipart = "==0.0.6"
+joblib = "*"
+pandas = "*"
+scikit-learn = "*"
 
 [dev-packages]
 
